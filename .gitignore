@@ -1,12 +1,4 @@
 **/*.dSYM/
 **/*.exe
 .DS_Store
-*.out
-*.exe
-*.dSYM
-*.o
-*.obj
-*.so
-*.a
-*.lib
-*.dll
+
