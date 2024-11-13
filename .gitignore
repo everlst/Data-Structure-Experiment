@@ -1,2 +1,3 @@
-*.dSYM/
+**/*.dSYM/
 *.exe
+*.DS_Store
