@@ -1,133 +1,225 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 // 定义学生信息结构体
-struct Student {
-    string name;
-    int age;
-    Student* next;
-};
+typedef struct stuInfo {
+    char stuName[10];  // 姓名
+    long Birth_Date;   // 生日（格式19940424）
+} ElemType;
 
-// 创建一个带头结点的链表
-class StudentList {
-   public:
-    StudentList() {
-        head = new Student();  // 创建头结点
-        head->next = nullptr;  // 初始化为空链表
+// 定义链表节点数据结构体
+typedef struct node {
+    ElemType data;
+    struct node *next;
+} ListNode, *ListPtr;
+
+// 创建带头结点的空链表
+ListPtr CreateList() {
+    ListPtr head = new ListNode;  // 创建头结点
+    head->next = nullptr;         // 头结点的next指针置空
+    return head;
+}
+
+// 删除整个链表
+void DestroyList(ListPtr &head) {
+    if (!head)
+        return;
+
+    ListPtr p = head;  // 从头结点开始
+    while (p) {
+        ListPtr temp = p;  // 保存当前节点
+        p = p->next;       // 移动到下一个节点
+        delete temp;       // 释放当前节点
     }
+    head = nullptr;  // 头指针置空
+}
 
-    // 从标准输入中读取学生信息并添加到链表中
-    void readFromStdin() {
-        string name;
-        int age;
+// 创建新节点
+ListPtr createNode(ElemType data) {
+    ListPtr newNode = new ListNode;
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
 
-        while (cin >> name >> age) {
-            addStudent(name, age);
-        }
+// 向链表末尾添加节点
+void AddNode(ListPtr *head, ListPtr *tail, ElemType data) {
+    ListPtr newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+        *tail = newNode;
+    } else {
+        (*tail)->next = newNode;
+        *tail = newNode;
     }
+}
 
-    // 添加学生到链表
-    void addStudent(const string& name, int age) {
-        Student* newStudent = new Student{name, age, nullptr};
-        Student* temp = head;
-
-        // 找到链表末尾
-        while (temp->next != nullptr) {
-            temp = temp->next;
-        }
-
-        temp->next = newStudent;
+// 删除指定学生信息的节点
+void DeleteNode(ListPtr *head, char *name, long Birth_Date) {
+    if (*head == NULL) {
+        printf("空表。\n");
+        return;
     }
-
-    // 打印链表
-    void printList() {
-        Student* temp = head->next;  // 跳过头结点
-        while (temp != nullptr) {
-            cout << temp->name << " " << temp->age << endl;
-            temp = temp->next;
-        }
-    }
-
-    // 删除学生节点
-    void deleteStudent(const string& name, int age) {
-        Student* temp = head;
-        while (temp->next != nullptr) {
-            if (temp->next->name == name && temp->next->age == age) {
-                Student* toDelete = temp->next;
-                temp->next = temp->next->next;
-                delete toDelete;
-                return;
-            }
-            temp = temp->next;
-        }
-    }
-
-    // 合并两个按年龄递增顺序排列的链表为一个按年龄递减排序的链表
-    static StudentList mergeLists(StudentList& list1, StudentList& list2) {
-        StudentList mergedList;
-
-        Student* p1 = list1.head->next;
-        Student* p2 = list2.head->next;
-        Student* prev = nullptr;
-
-        // 合并
-        while (p1 != nullptr || p2 != nullptr) {
-            if (p1 == nullptr) {
-                prev->next = p2;
-                break;
-            }
-            if (p2 == nullptr) {
-                prev->next = p1;
-                break;
-            }
-
-            if (p1->age > p2->age) {
-                prev = p1;
-                p1 = p1->next;
-            } else if (p1->age < p2->age) {
-                prev = p2;
-                p2 = p2->next;
+    ListPtr temp = *head;
+    ListPtr prev = NULL;
+    while (temp != NULL) {
+        if (strcmp(temp->data.stuName, name) == 0 && temp->data.Birth_Date == Birth_Date) {
+            if (prev == NULL) {
+                *head = temp->next;
             } else {
-                if (p1->name == p2->name) {
-                    p2 = p2->next;
-                } else {
-                    prev = p1;
-                    p1 = p1->next;
-                }
+                prev->next = temp->next;
             }
+            delete temp;
+            printf("删除节点： %s %ld\n", name, Birth_Date);
+            return;
         }
+        prev = temp;
+        temp = temp->next;
+    }
+    printf("节点未找到： %s %ld\n", name, Birth_Date);
+}
 
-        return mergedList;
+// 打印链表中的所有节点
+void PrintList(ListPtr head) {
+    if (head == NULL) {
+        printf("空表\n");
+        return;
+    }
+    ListPtr temp = head;
+    while (temp != NULL) {
+        printf("姓名: %s, 生日: %ld\n", temp->data.stuName, temp->data.Birth_Date);
+        temp = temp->next;
+    }
+}
+
+// 交换两个节点的数据
+void SwapData(ListPtr a, ListPtr b) {
+    ElemType temp = a->data;
+    a->data = b->data;
+    b->data = temp;
+}
+
+// 冒泡排序实现链表排序（从小到大）
+void SortList(ListPtr head) {
+    if (head == NULL || head->next == NULL)
+        return;
+
+    bool swapped;
+    ListPtr ptr1;
+    ListPtr lptr = NULL;
+
+    do {
+        swapped = false;
+        ptr1 = head;
+
+        while (ptr1->next != lptr) {
+            if (ptr1->data.Birth_Date > ptr1->next->data.Birth_Date) {
+                SwapData(ptr1, ptr1->next);
+                swapped = true;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    } while (swapped);
+}
+
+// 合并
+ListPtr Merge(ListPtr list1, ListPtr list2) {
+    // 先对输入链表排序
+    SortList(list1);
+    SortList(list2);
+
+    ListPtr mergedList = NULL, tail = NULL;
+
+    // 合并两个有序链表
+    while (list1 != NULL && list2 != NULL) {
+        if (list1->data.Birth_Date < list2->data.Birth_Date) {
+            AddNode(&mergedList, &tail, list1->data);
+            list1 = list1->next;
+        } else {
+            AddNode(&mergedList, &tail, list2->data);
+            list2 = list2->next;
+        }
     }
 
-   private:
-    Student* head;
-};
+    // 剩下的直接加上
+    while (list1 != NULL) {
+        AddNode(&mergedList, &tail, list1->data);
+        list1 = list1->next;
+    }
+
+    while (list2 != NULL) {
+        AddNode(&mergedList, &tail, list2->data);
+        list2 = list2->next;
+    }
+
+    return mergedList;
+}
+
+ListPtr list1 = NULL, tail1 = NULL;
+ListPtr list2 = NULL, tail2 = NULL;
 
 int main() {
-    // 使用freopen将文件重定向到标准输入
-    freopen("student1.txt", "r", stdin);  // 将输入重定向到students.txt文件
+    freopen("EXP1/result.txt", "w", stdout);
 
-    StudentList list1, list2;
-    int n1, n2;
+    std::ifstream file1("EXP1/students1.txt");
+    std::string line1;
 
-    // 读取学生数量
-    cin >> n1;
-    list1.readFromStdin();
+    // 逐行读取文件
+    while (std::getline(file1, line1)) {
+        std::stringstream ss(line1);
+        ElemType student;
 
-    cin >> n2;
-    list2.readFromStdin();
+        std::string temp_name;
+        long temp_birthday;
 
-    // 打印链表
-    cout << "List 1:" << endl;
-    list1.printList();
-    cout << "List 2:" << endl;
-    list2.printList();
+        ss >> temp_name >> temp_birthday;
 
-    // 合并链表并打印
-    StudentList mergedList = StudentList::mergeLists(list1, list2);
-    cout << "Merged List:" << endl;
-    mergedList.printList();
+        // 将 std::string 转换为 char 数组
+        std::strncpy(student.stuName, temp_name.c_str(), sizeof(student.stuName) - 1);
+        student.stuName[sizeof(student.stuName) - 1] = '\0';
+
+        // 将生日保存到结构体中
+        student.Birth_Date = temp_birthday;
+        AddNode(&list1, &tail1, student);
+    }
+
+    file1.close();
+
+    std::ifstream file2("EXP1/students2.txt");
+    std::string line2;
+
+    // 逐行读取文件
+    while (std::getline(file2, line2)) {
+        std::stringstream ss(line2);
+        ElemType student;
+
+        std::string temp_name;
+        long temp_birthday;
+
+        ss >> temp_name >> temp_birthday;
+
+        // 将 std::string 转换为 char 数组
+        std::strncpy(student.stuName, temp_name.c_str(), sizeof(student.stuName) - 1);
+        student.stuName[sizeof(student.stuName) - 1] = '\0';
+
+        // 将生日保存到结构体中
+        student.Birth_Date = temp_birthday;
+        AddNode(&list2, &tail2, student);
+    }
+
+    file2.close();
+
+    // 打印初始链表
+    printf("List 1:\n");
+    PrintList(list1);
+    printf("List 2:\n");
+    PrintList(list2);
+
+    // 合并链表并打印结果
+    ListPtr mergedList = Merge(list1, list2);
+    printf("合并后的链表（年龄降序）:\n");
+    PrintList(mergedList);
 
     return 0;
 }
