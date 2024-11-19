@@ -152,30 +152,29 @@ void printFrequencyStats() {
         totalChars += pair.second;
     }
 
-    cout << "\n=== 字符频率统计 ===" << endl;
+    cout << "=== 字符频率统计 ===" << endl;
     cout << "总字符数: " << totalChars << endl;
     cout << "不同字符数: " << CH_Count << endl;
-    cout << "\n字符\t出现次数\t频率" << endl;
-    cout << "--------------------------------" << endl;
+    cout << endl;
+    cout << "字符\t出现次数" << endl;
+    cout << "--------------------" << endl;
 
     for (const auto& pair : freq) {
-        double percentage = (double)pair.second / totalChars * 100;
-        cout << (pair.first == ' ' ? "空格" : string(1, pair.first)) << "\t"
-             << pair.second << "\t\t"
-             << fixed << setprecision(2) << percentage << "%" << endl;
+        cout << (pair.first == ' ' ? "空格" : string(1, pair.first)) << "\t\t  "
+             << pair.second  << endl;
     }
-    cout << "--------------------------------" << endl;
+    cout << "--------------------" << endl;
 }
 
 // 打印编码表
 void printCodes() {
     cout << "\nHuffman编码表：" << endl;
-    cout << "--------------------------------" << endl;
+    cout << "--------------------------" << endl;
     for (int i = 1; i <= CH_Count; i++) {
         cout << "字符: " << HC[i].ch
              << " \t编码: " << HC[i].code << endl;
     }
-    cout << "--------------------------------" << endl;
+    cout << "--------------------------" << endl;
 }
 
 // 清理内存
