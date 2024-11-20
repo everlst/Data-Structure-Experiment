@@ -1,9 +1,4 @@
-#include <bitset>
-#include <climits>
-#include <iostream>
-#include <map>
-#include <string>
-
+#include <bits/stdc++.h>
 using namespace std;
 
 // 哈夫曼树节点结构
@@ -17,9 +12,8 @@ typedef struct {
 
 // 哈夫曼编码结构
 typedef struct {
-    char ch;        // 字符
-    uint32_t code;  // 编码的比特序列
-    int length;     // 编码长度
+    char ch;      // 字符
+    string code;  // 编码
 } HuffmanCode;
 
 // 全局变量
@@ -46,7 +40,7 @@ void selectMin(int end, int& s1, int& s2) {
             if (HT[i].weight < min1) {
                 min2 = min1;  // 更新次小值
                 s2 = s1;
-                min1 = HT[i].weight;  // 更新最小值
+                min1 = HT[i].weight;
                 s1 = i;
             } else if (HT[i].weight < min2) {
                 min2 = HT[i].weight;  // 更新次小值
@@ -70,7 +64,7 @@ void Build() {
         i++;
     }
 
-    // 初始化非叶子节点（剩下的
+    // 初始化非叶子节点（剩下的）
     for (; i <= n; i++) {
         HT[i].parent = HT[i].left = HT[i].right = 0;
         HT[i].weight = 0;
@@ -91,31 +85,23 @@ void Build() {
 // 生成哈夫曼编码
 void Encode() {
     HC = new HuffmanCode[CH_Count + 1];  // 编码表
+    char* temp = new char[CH_Count];
+    temp[CH_Count - 1] = '\0';
 
     for (int i = 1; i <= CH_Count; i++) {
-        uint32_t code = 0;
-        int length = 0;
+        int p = CH_Count - 1;  // 从后往前存放编码
         int currt = i;
         int father = HT[i].parent;
-
         while (father != 0) {
-            code = (code << 1) | (HT[father].right == currt ? 1 : 0);
-            // 先左移一位添加0，然后看右儿子是否是当前节点，是的话就是1，否则是0
-            length++;
+            p--;
+            temp[p] = (HT[father].left == currt) ? '0' : '1';
             currt = father;
             father = HT[father].parent;
         }
-
-        uint32_t reversedCode = 0;  // 反转编码
-        for (int j = 0; j < length; j++) {
-            reversedCode = (reversedCode << 1) | (code & 1);
-            code >>= 1;
-        }
-
         HC[i].ch = HT[i].ch;
-        HC[i].code = reversedCode;
-        HC[i].length = length;
+        HC[i].code = string(temp + p);
     }
+    delete[] temp;
 }
 
 // 初始化哈夫曼编码
@@ -128,17 +114,14 @@ void initHuffman(const string& str) {
 // 编码
 string encode(const string& str) {
     string result;
-    map<char, pair<uint32_t, int>> Code_T;
+    map<char, string> Code_T;
 
     for (int i = 1; i <= CH_Count; i++) {
-        Code_T[HC[i].ch] = {HC[i].code, HC[i].length};
+        Code_T[HC[i].ch] = HC[i].code;
     }
 
     for (char c : str) {
-        auto [bits, length] = Code_T[c];
-        for (int i = length - 1; i >= 0; --i) {
-            result += ((bits >> i) & 1) ? '1' : '0';
-        }
+        result += Code_T[c];
     }
     return result;
 }
@@ -147,7 +130,6 @@ string encode(const string& str) {
 string decode(const string& code) {
     string result;
     int pos = 0;
-
     while (pos < code.length()) {
         int p = 2 * CH_Count - 1;
         while (HT[p].left != 0 && HT[p].right != 0) {
@@ -160,18 +142,26 @@ string decode(const string& code) {
         }
         result += HT[p].ch;
     }
-
     return result;
 }
 
 // 打印频率统计
 void printFrequencyStats() {
+    int totalChars = 0;
+    for (const auto& pair : freq) {
+        totalChars += pair.second;
+    }
+
     cout << "=== 字符频率统计 ===" << endl;
+    cout << "总字符数: " << totalChars << endl;
+    cout << "不同字符数: " << CH_Count << endl;
+    cout << endl;
     cout << "字符\t出现次数" << endl;
     cout << "--------------------" << endl;
 
     for (const auto& pair : freq) {
-        cout << (pair.first == ' ' ? "空格" : string(1, pair.first)) << "\t\t" << pair.second << endl;
+        cout << (pair.first == ' ' ? "空格" : string(1, pair.first)) << "\t\t  "
+             << pair.second << endl;
     }
     cout << "--------------------" << endl;
 }
@@ -179,23 +169,28 @@ void printFrequencyStats() {
 // 打印编码表
 void printCodes() {
     cout << "\nHuffman编码表：" << endl;
-    cout << "--------------------" << endl;
+    cout << "--------------------------" << endl;
     for (int i = 1; i <= CH_Count; i++) {
-        cout << "字符: " << (HC[i].ch == ' ' ? "空格" : string(1, HC[i].ch))
-             << " \t编码: " << bitset<32>(HC[i].code).to_string().substr(32 - HC[i].length) << endl;
+        cout << "字符: " << HC[i].ch
+             << " \t编码: " << HC[i].code << endl;
     }
-    cout << "--------------------" << endl;
+    cout << "--------------------------" << endl;
+}
+
+// 清理内存
+void cleanup() {
+    delete[] HT;
+    delete[] HC;
 }
 
 int main() {
-    freopen("EXP2/string.txt", "r", stdin);
-    freopen("EXP2/OUT.txt", "w", stdout);
+    freopen("Huffman_Tree/string.txt", "r", stdin);
+    freopen("Huffman_Tree/OUT.txt", "w", stdout);
+
     string str;
-    getline(cin, str);
-    cout << "原始字符串：" << str << endl;
+    getline(cin, str);  // 使用getline读取整行，包括空格
 
     initHuffman(str);
-
     printFrequencyStats();
     printCodes();
 
@@ -203,14 +198,15 @@ int main() {
     cout << "\n编码结果：" << encoded << endl;
 
     string unencodeed;
-    getline(cin, unencodeed);
+    cin >> unencodeed;
     string decoded = decode(unencodeed);
     cout << "\n解码结果：" << decoded << endl;
 
     string ans;
-    getline(cin, ans);
+    cin >> ans;
     // 验证结果
     cout << "\n验证结果：" << (ans == decoded ? "正确" : "错误") << endl;
 
+    cleanup();  // 清理内存
     return 0;
 }

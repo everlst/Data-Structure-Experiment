@@ -160,9 +160,9 @@ ListPtr list1 = NULL, tail1 = NULL;
 ListPtr list2 = NULL, tail2 = NULL;
 
 int main() {
-    freopen("EXP1/result.txt", "w", stdout);
+    freopen("Linear_List_StuInfo/result.txt", "w", stdout);
 
-    std::ifstream file1("EXP1/students1.txt");
+    std::ifstream file1("Linear_List_StuInfo/students1.txt");
     std::string line1;
 
     // 逐行读取文件
@@ -186,7 +186,7 @@ int main() {
 
     file1.close();
 
-    std::ifstream file2("EXP1/students2.txt");
+    std::ifstream file2("Linear_List_StuInfo/students2.txt");
     std::string line2;
 
     // 逐行读取文件

@@ -29,7 +29,7 @@ void getogether(int x, int y) {
 }
 
 int main() {
-    freopen("EXP3/Kruskal.in", "r", stdin);
+    freopen("Kruskal/Kruskal.in", "r", stdin);
 
     cin >> n >> m;
 

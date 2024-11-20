@@ -3,7 +3,7 @@ using namespace std;
 
 const int MAXN = 1000;
 int a[MAXN];  // 存储数据的数组
-int n;          // 数据个数
+int n;        // 数据个数
 
 // 检查重复元素
 void Check() {
@@ -86,7 +86,7 @@ void H_Find(int key) {
 }
 
 int main() {
-    freopen("EXP4/input.txt", "r", stdin);
+    freopen("Quick_Sort__Binary_Search/input.txt", "r", stdin);
     cin >> n;
     for (int i = 0; i < n; i++) {
         cin >> a[i];
