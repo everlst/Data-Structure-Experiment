@@ -6,7 +6,7 @@
             "label": "My C/C++: g++ build active file",
             "command": "g++",
             "args": [
-                "-std=c++11",
+                "-std=c++17",
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
